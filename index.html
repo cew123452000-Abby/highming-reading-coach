@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="〈高明說話術〉五要素閱讀探究互動學習網頁">
+  <title>高明說話術｜五要素閱讀探究</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+      color: #213447;
+      background: #f3f7fb;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+
+    header {
+      background: linear-gradient(115deg, #153c62, #25858a);
+      color: white;
+      padding: 28px max(20px, calc((100vw - 1050px) / 2));
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 36px);
+    }
+
+    header p { margin: 0; opacity: .95; }
+    .wrap { max-width: 1050px; margin: auto; padding: 22px 16px 60px; }
+
+    .panel {
+      background: white;
+      border: 1px solid #d9e4ed;
+      border-radius: 17px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 5px 20px #1837500b;
+    }
+
+    .flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+
+    .step {
+      border: 2px solid #d6e2eb;
+      border-radius: 12px;
+      padding: 13px;
+      text-align: left;
+      background: white;
+      color: #24465b;
+      cursor: pointer;
+      font-weight: 700;
+      min-height: 52px;
+    }
+
+    .step.active { background: #e7f4f5; border-color: #16828a; }
+    .step.done::after { content: " ✓"; color: #16828a; }
+    label { font-weight: 700; display: block; margin: 12px 0 7px; }
+
+    input, textarea, select {
+      font: inherit;
+      border: 1px solid #a9bfce;
+      border-radius: 10px;
+      padding: 12px;
+      width: 100%;
+      background: white;
+      color: #1d3445;
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      min-height: 46px;
+      font-weight: 700;
+      background: #176f83;
+      color: white;
+      touch-action: manipulation;
+    }
+
+    button.secondary { background: #eaf1f6; color: #21485b; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .muted { color: #617585; font-size: 14px; }
+
+    .pill {
+      display: inline-block;
+      background: #e3f4f1;
+      color: #14635f;
+      padding: 5px 10px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .question {
+      background: #e9f4f8;
+      border-left: 5px solid #26859b;
+      padding: 16px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .feedback {
+      background: #fff8e8;
+      border: 1px solid #f0d89b;
+      padding: 13px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .source {
+      background: #f5f8fa;
+      padding: 14px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      line-height: 2;
+      font-size: 1.1rem;
+      letter-spacing: .025em;
+    }
+
+    .hidden { display: none; }
+    .progress { height: 9px; background: #e0eaf0; border-radius: 20px; overflow: hidden; }
+    .progress div { height: 100%; background: #17878c; transition: width .2s; }
+
+    .result {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      background: #f8fbfd;
+      border: 1px solid #d9e4ed;
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    footer { text-align: center; color: #698090; font-size: 13px; margin-top: 30px; }
+
+    @media (max-width: 600px) {
+      .steps { grid-template-columns: 1fr; }
+      .panel { padding: 15px; }
+      .flex > button { flex: 1 1 100%; }
+    }
+
+    @media print {
+      header, #work, #finishStory, .steps, .progress, #progressText, .report-actions, footer { display: none !important; }
+      body, :root { background: white; }
+      .panel { border: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>高明說話術｜五要素閱讀探究</h1>
+    <p>讀懂三個論據 → 找出五要素 → 歸納說話方式 → 說明如何支持論點</p>
+  </header>
+
+  <main class="wrap">
+    <section class="panel">
+      <div class="flex">
+        <div style="flex: 1; min-width: 210px">
+          <label for="student">學生姓名或座號（可只填座號）</label>
+          <input id="student" placeholder="例如：502-08" autocomplete="off">
+        </div>
+        <div style="flex: 1; min-width: 210px">
+          <label for="mode">學習模式</label>
+          <select id="mode">
+            <option value="guided">引導模式：逐題提示</option>
+            <option value="independent">自主模式：先回答再回饋</option>
+          </select>
+        </div>
+      </div>
+      <p class="muted">資料僅儲存在本機瀏覽器；可下載學習紀錄。這是規則式引導工具，並非連線生成式 AI。</p>
+    </section>
+
+    <section class="panel">
+      <strong>閱讀任務</strong>
+      <div class="steps" id="steps"></div>
+      <div class="progress" aria-label="學習進度"><div id="bar" style="width: 0"></div></div>
+      <p class="muted" id="progressText"></p>
+    </section>
+
+    <section class="panel">
+      <span class="pill" id="stage"></span>
+      <h2 id="storyTitle"></h2>
+      <p id="storyIntro"></p>
+      <div class="source" id="source"></div>
+      <p class="muted">以上為課本〈高明說話術〉第二、三、四自然段原文（跨頁文字已接續排版）。請先閱讀原文，再回答問題。</p>
+    </section>
+
+    <section class="panel" id="work">
+      <h2>一步一步找出五要素</h2>
+      <p class="muted">請先閱讀課文，再用自己的話回答。每次只完成一題。</p>
+      <div class="question" id="question"></div>
+      <label for="answer">我的回答</label>
+      <textarea id="answer" placeholder="請根據課文，用自己的話回答……"></textarea>
+      <div class="flex" style="margin-top: 12px">
+        <button id="save">儲存回答並前進</button>
+        <button class="secondary" id="hint">給我一點提示</button>
+        <button class="secondary" id="back">上一題</button>
+      </div>
+      <div class="feedback hidden" id="feedback" role="status"></div>
+    </section>
+
+    <section class="panel hidden" id="finishStory">
+      <h2>這個例子的說話方式是什麼？</h2>
+      <p id="summaryGuide"></p>
+      <label for="strategy">我的歸納：這個例子呈現什麼說話方式？</label>
+      <textarea id="strategy" placeholder="例如：我認為……，因為課文中……"></textarea>
+      <label for="link">這個例子如何支持「好好說，說好話」的論點？</label>
+      <textarea id="link" placeholder="這個例子讓我明白……"></textarea>
+      <div class="flex" style="margin-top: 12px">
+        <button id="complete">完成本段並前往下一段</button>
+        <button class="secondary" id="review">返回修改五要素</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>我的三段學習紀錄</h2>
+      <div id="report" class="result"></div>
+      <div class="flex report-actions" style="margin-top: 14px">
+        <button id="txt">下載學習紀錄 TXT</button>
+        <button class="secondary" id="print">列印／另存 PDF</button>
+        <button class="secondary" id="reset">清除本機紀錄</button>
+      </div>
+    </section>
+
+    <footer>閱讀探究教學版｜重視文本證據、學生自主表達與論據結構分析</footer>
+  </main>
+
+  <script>
+    const lessons = [
+      {
+        title: "第二段｜石延年與馬夫",
+        intro: "請先閱讀下方課文原文，再完成五要素分析。",
+        source: "宋朝詩人石延年有次乘馬出遊，馬夫一不注意，讓馬受到驚嚇，導致石延年摔下馬。馬夫嚇得直冒冷汗，一旁圍觀的人猜想石延年一定會破口大罵，不料石延年卻打趣的說：「幸好我是「石」學士，如果換成「瓦」學士，不就摔碎了！」大家一聽都笑了，心急如焚的馬夫也鬆一口氣。面對他人錯誤，以溫和幽默代替指責，同理對方的心情，不僅有利於解決問題，也能化解緊張的氣氛。",
+        qs: ["故事中的主要人物是誰？", "發生了什麼事？", "人物遭遇了什麼問題或緊張情況？", "石延年怎麼說話來處理這個問題？", "最後發生什麼結果？"],
+        hints: ["想想是誰摔下馬、誰不小心使馬受驚。", "找出「乘馬出遊」之後發生的事。", "馬夫為什麼害怕？圍觀的人預期會發生什麼？", "留意「石學士」和「瓦學士」的幽默說法。", "觀察眾人與馬夫的反應。"]
+      },
+      {
+        title: "第三段｜兩組設計團隊",
+        intro: "請先閱讀下方課文原文，再完成五要素分析。",
+        source: "有時，比起嚴厲的提出建議，說出帶有善意及體貼的話，更可以成為鼓舞人們前行的力量。比如說，一家設計公司有兩組設計團隊，其中一組的主管，每每對設計師的作品不滿，就直言批評，讓設計師有如啞巴吃黃連，漸漸失去信心。另一組的主管總是以親切的口吻，先肯定作品中的優點，接著才具體點出可以改進的地方：「只要能這樣修飾一下，那就更好了！」結果，相較之下，受到主管鼓舞的設計師，不僅增加許多自信，更交出不少精采的作品。",
+        qs: ["這個例子有哪些主要人物或群體？", "兩組團隊遇到什麼共同情況？", "面對作品需要改進時，出現了什麼問題？", "兩位主管分別用什麼說話方式處理？", "兩組設計師最後產生什麼不同結果？"],
+        hints: ["不只有一位主角，請留意兩組主管與設計師。", "想想主管對設計師作品不滿時的情境。", "設計師需要改進作品，主管如何提出意見是關鍵。", "一位直接批評；另一位先肯定，再具體建議。", "比較「失去信心」與「增加自信、作品更精彩」。"]
+      },
+      {
+        title: "第四段｜惡言引發衝突",
+        intro: "請先閱讀下方課文原文，再完成五要素分析。",
+        source: "「病從口入，禍從口出」早已是老生常談，然而，生活中依然有許多人為了逞口舌之快，陷入意氣之爭。每天的新聞裡，公眾人物針鋒相對，你一言，我一語，誰也不讓誰。網路社群的開放，讓不少人藉著言論自由隨意發言，使得惡意充滿人們的日常生活。當冷言惡語到了現實中，常會引發對立，甚至造成肢體衝突。這些帶有惡意的言語，是令人心情不快的禍源，若是人們能冷靜思考，存好心、說好話，或許生活便可以少些傷害，多些歡笑。",
+        qs: ["這一段提到哪些人物或群體？", "作者描述了什麼說話現象？", "這些言語可能造成什麼問題？", "文中人物採取什麼說話方式？有沒有描述他們如何成功解決？", "作者指出惡言可能帶來什麼結果？"],
+        hints: ["找出「公眾人物」與「網路社群」相關描述。", "留意「針鋒相對」及「隨意發言」。", "思考惡意言語對人際互動的影響。", "這是反例：請區分「不當做法」和「原文未交代的解決方法」。", "課文提到對立與衝突，甚至更嚴重的後果。"]
+      }
+    ];
+
+    const KEY = "speaking-argument-five-elements-v2";
+    let data;
+    try { data = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (error) { data = {}; }
+    if (!Array.isArray(data.answers)) data.answers = [Array(5).fill(""), Array(5).fill(""), Array(5).fill("")];
+    if (!Array.isArray(data.strategies)) data.strategies = ["", "", ""];
+    if (!Array.isArray(data.links)) data.links = ["", "", ""];
+
+    let lesson = Math.min(2, Math.max(0, data.lesson || 0));
+    let q = Math.min(4, Math.max(0, data.q || 0));
+    const $ = id => document.getElementById(id);
+    $("student").value = data.student || "";
+    $("mode").value = data.mode || "guided";
+
+    function persist() {
+      data.lesson = lesson;
+      data.q = q;
+      data.student = $("student").value;
+      data.mode = $("mode").value;
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }
+
+    function allDone(index) {
+      return data.answers[index].every(value => value.trim()) && data.strategies[index].trim() && data.links[index].trim();
+    }
+
+    function render() {
+      const current = lessons[lesson];
+      $("steps").innerHTML = lessons.map((item, index) => `<button class="step ${index === lesson ? "active" : ""} ${allDone(index) ? "done" : ""}" data-i="${index}">${index + 1}. ${item.title}</button>`).join("");
+      document.querySelectorAll(".step").forEach(button => {
+        button.onclick = () => { lesson = Number(button.dataset.i); q = 0; persist(); render(); };
+      });
+
+      $("stage").textContent = `第 ${lesson + 1} 個例子｜${lesson === 2 ? "反例" : "正例"}`;
+      $("storyTitle").textContent = current.title;
+      $("storyIntro").textContent = current.intro;
+      $("source").textContent = current.source;
+      $("question").textContent = `第 ${q + 1} 題／5：${current.qs[q]}`;
+      $("answer").value = data.answers[lesson][q] || "";
+      $("strategy").value = data.strategies[lesson] || "";
+      $("link").value = data.links[lesson] || "";
+      $("summaryGuide").textContent = lesson === 2
+        ? "注意：這是反例，請不要編造課文沒有的「成功解決」；應說明惡言造成的後果與反面提醒。"
+        : "請回顧剛剛寫的五要素，歸納說話方式，並用課文證據說明。";
+
+      const ready = data.answers[lesson].every(value => value.trim());
+      $("work").classList.toggle("hidden", ready);
+      $("finishStory").classList.toggle("hidden", !ready);
+      $("feedback").classList.add("hidden");
+
+      const finished = data.answers.flat().filter(value => value.trim()).length
+        + data.strategies.filter(value => value.trim()).length
+        + data.links.filter(value => value.trim()).length;
+      $("bar").style.width = `${finished / 21 * 100}%`;
+      $("progressText").textContent = `已完成 ${finished}／21 個學習欄位；目前進行第 ${lesson + 1} 個例子。`;
+      renderReport();
+    }
+
+    function renderReport() {
+      let text = `學生：${$("student").value || "未填"}\n中心論點：好好說，說好話，是最高明的說話術。\n`;
+      lessons.forEach((item, index) => {
+        text += `\n【${item.title}】\n`;
+        item.qs.forEach((question, questionIndex) => {
+          text += `${questionIndex + 1}. ${question}\n答：${data.answers[index][questionIndex] || "（尚未作答）"}\n`;
+        });
+        text += `歸納說話方式：${data.strategies[index] || "（尚未作答）"}\n`;
+        text += `如何支持論點：${data.links[index] || "（尚未作答）"}\n`;
+      });
+      $("report").textContent = text;
+      return text;
+    }
+
+    function showFeedback(text) {
+      $("feedback").textContent = text;
+      $("feedback").classList.remove("hidden");
+    }
+
+    $("save").onclick = () => {
+      const value = $("answer").value.trim();
+      if (value.length < 3) {
+        showFeedback("請先用自己的話回答，至少寫出一個較完整的想法。");
+        return;
+      }
+      data.answers[lesson][q] = value;
+      persist();
+      if (q < 4) { q++; persist(); }
+      render();
+    };
+
+    $("hint").onclick = () => showFeedback(`閱讀提示：${lessons[lesson].hints[q]} 請回到課文找證據，再自己完成回答。`);
+    $("back").onclick = () => {
+      data.answers[lesson][q] = $("answer").value;
+      if (q > 0) q--;
+      persist();
+      render();
+    };
+
+    $("review").onclick = () => {
+      data.strategies[lesson] = $("strategy").value;
+      data.links[lesson] = $("link").value;
+      q = 4;
+      data.answers[lesson][4] = "";
+      persist();
+      render();
+    };
+
+    $("complete").onclick = () => {
+      const strategy = $("strategy").value.trim();
+      const link = $("link").value.trim();
+      if (strategy.length < 4 || link.length < 6) {
+        alert("請先歸納說話方式，並說明這個例子如何支持中心論點。");
+        return;
+      }
+      data.strategies[lesson] = strategy;
+      data.links[lesson] = link;
+      persist();
+      if (lesson < 2) {
+        lesson++;
+        q = 0;
+        persist();
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        render();
+        alert("三段學習完成！請檢查學習紀錄並下載保存。");
+      }
+    };
+
+    $("student").oninput = () => { persist(); renderReport(); };
+    $("mode").onchange = () => {
+      persist();
+      showFeedback($("mode").value === "guided" ? "引導模式：可以使用提示。" : "自主模式：建議先自行作答，再視需要查看提示。");
+    };
+
+    $("txt").onclick = () => {
+      const blob = new Blob([renderReport()], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `高明說話術_五要素_${$("student").value.trim() || "學生"}.txt`;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    $("print").onclick = () => window.print();
+    $("reset").onclick = () => {
+      if (confirm("確定要清除這個瀏覽器中的所有學習紀錄嗎？")) {
+        localStorage.removeItem(KEY);
+        location.reload();
+      }
+    };
+
+    render();
+  </script>
+</body>
+</html>
